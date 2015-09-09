@@ -7,6 +7,7 @@ package com.path.android.jobqueue.network;
  */
 public interface NetworkEventProvider {
     public void setListener(Listener listener);
+
     public static interface Listener {
         /**
          * @param isConnected can be as simple as having an internet connect or can also be customized. (e.g. if your servers are down)

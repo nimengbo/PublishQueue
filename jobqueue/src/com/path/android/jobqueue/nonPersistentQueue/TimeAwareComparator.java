@@ -20,17 +20,17 @@ public class TimeAwareComparator implements Comparator<JobHolder> {
         long now = System.nanoTime();
         boolean job1Valid = jobHolder.getDelayUntilNs() <= now;
         boolean job2Valid = jobHolder2.getDelayUntilNs() <= now;
-        if(job1Valid) {
+        if (job1Valid) {
             return job2Valid ? baseComparator.compare(jobHolder, jobHolder2) : -1;
         }
-        if(job2Valid) {
+        if (job2Valid) {
             return job1Valid ? baseComparator.compare(jobHolder, jobHolder2) : 1;
         }
         //if both jobs are invalid, return the job that can run earlier. if the want to run at the same time, use base
         //comparison
-        if(jobHolder.getDelayUntilNs() < jobHolder2.getDelayUntilNs()) {
+        if (jobHolder.getDelayUntilNs() < jobHolder2.getDelayUntilNs()) {
             return -1;
-        } else if(jobHolder.getDelayUntilNs() > jobHolder2.getDelayUntilNs()) {
+        } else if (jobHolder.getDelayUntilNs() > jobHolder2.getDelayUntilNs()) {
             return 1;
         }
         return baseComparator.compare(jobHolder, jobHolder2);

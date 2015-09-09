@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
+
 import com.path.android.jobqueue.BaseJob;
 import com.path.android.jobqueue.JobHolder;
 import com.path.android.jobqueue.JobManager;
@@ -32,9 +33,9 @@ public class SqliteJobQueue implements JobQueue {
     QueryCache nextJobsQueryCache;
 
     /**
-     * @param context application context
+     * @param context   application context
      * @param sessionId session id should match {@link JobManager}
-     * @param id uses this value to construct database name {@code "db_" + id}
+     * @param id        uses this value to construct database name {@code "db_" + id}
      */
     public SqliteJobQueue(Context context, long sessionId, String id, JobSerializer jobSerializer) {
         this.sessionId = sessionId;
@@ -68,7 +69,7 @@ public class SqliteJobQueue implements JobQueue {
             stmt.bindLong(DbOpenHelper.ID_COLUMN.columnIndex + 1, jobHolder.getId());
         }
         stmt.bindLong(DbOpenHelper.PRIORITY_COLUMN.columnIndex + 1, jobHolder.getPriority());
-        if(jobHolder.getGroupId() != null) {
+        if (jobHolder.getGroupId() != null) {
             stmt.bindString(DbOpenHelper.GROUP_ID_COLUMN.columnIndex + 1, jobHolder.getGroupId());
         }
         stmt.bindLong(DbOpenHelper.RUN_COUNT_COLUMN.columnIndex + 1, jobHolder.getRunCount());
@@ -139,7 +140,7 @@ public class SqliteJobQueue implements JobQueue {
     @Override
     public int countReadyJobs(boolean hasNetwork, Collection<String> excludeGroups) {
         String sql = readyJobsQueryCache.get(hasNetwork, excludeGroups);
-        if(sql == null) {
+        if (sql == null) {
             String where = createReadyJobWhereSql(hasNetwork, excludeGroups, true);
             String subSelect = "SELECT count(*) group_cnt, " + DbOpenHelper.GROUP_ID_COLUMN.columnName
                     + " FROM " + DbOpenHelper.JOB_HOLDER_TABLE_NAME
@@ -150,7 +151,7 @@ public class SqliteJobQueue implements JobQueue {
         }
         Cursor cursor = db.rawQuery(sql, new String[]{Long.toString(sessionId), Long.toString(System.nanoTime())});
         try {
-            if(!cursor.moveToNext()) {
+            if (!cursor.moveToNext()) {
                 return 0;
             }
             return cursor.getInt(0);
@@ -166,7 +167,7 @@ public class SqliteJobQueue implements JobQueue {
     public JobHolder findJobById(long id) {
         Cursor cursor = db.rawQuery(sqlHelper.FIND_BY_ID_QUERY, new String[]{Long.toString(id)});
         try {
-            if(!cursor.moveToFirst()) {
+            if (!cursor.moveToFirst()) {
                 return null;
             }
             return createJobHolderFromCursor(cursor);
@@ -185,7 +186,7 @@ public class SqliteJobQueue implements JobQueue {
     public JobHolder nextJobAndIncRunCount(boolean hasNetwork, Collection<String> excludeGroups) {
         //we can even keep these prepared but not sure the cost of them in db layer
         String selectQuery = nextJobsQueryCache.get(hasNetwork, excludeGroups);
-        if(selectQuery == null) {
+        if (selectQuery == null) {
             String where = createReadyJobWhereSql(hasNetwork, excludeGroups, false);
             selectQuery = sqlHelper.createSelect(
                     where,
@@ -196,7 +197,7 @@ public class SqliteJobQueue implements JobQueue {
             );
             nextJobsQueryCache.set(selectQuery, hasNetwork, excludeGroups);
         }
-        Cursor cursor = db.rawQuery(selectQuery, new String[]{Long.toString(sessionId),Long.toString(System.nanoTime())});
+        Cursor cursor = db.rawQuery(selectQuery, new String[]{Long.toString(sessionId), Long.toString(System.nanoTime())});
         try {
             if (!cursor.moveToNext()) {
                 return null;
@@ -217,20 +218,20 @@ public class SqliteJobQueue implements JobQueue {
     private String createReadyJobWhereSql(boolean hasNetwork, Collection<String> excludeGroups, boolean groupByRunningGroup) {
         String where = DbOpenHelper.RUNNING_SESSION_ID_COLUMN.columnName + " != ? "
                 + " AND " + DbOpenHelper.DELAY_UNTIL_NS_COLUMN.columnName + " <= ? ";
-        if(hasNetwork == false) {
+        if (hasNetwork == false) {
             where += " AND " + DbOpenHelper.REQUIRES_NETWORK_COLUMN.columnName + " != 1 ";
         }
         String groupConstraint = null;
-        if(excludeGroups != null && excludeGroups.size() > 0) {
+        if (excludeGroups != null && excludeGroups.size() > 0) {
             groupConstraint = DbOpenHelper.GROUP_ID_COLUMN.columnName + " IS NULL OR " +
                     DbOpenHelper.GROUP_ID_COLUMN.columnName + " NOT IN('" + joinStrings("','", excludeGroups) + "')";
         }
-        if(groupByRunningGroup) {
+        if (groupByRunningGroup) {
             where += " GROUP BY " + DbOpenHelper.GROUP_ID_COLUMN.columnName;
-            if(groupConstraint != null) {
+            if (groupConstraint != null) {
                 where += " HAVING " + groupConstraint;
             }
-        } else if(groupConstraint != null) {
+        } else if (groupConstraint != null) {
             where += " AND ( " + groupConstraint + " )";
         }
         return where;
@@ -238,8 +239,8 @@ public class SqliteJobQueue implements JobQueue {
 
     private static String joinStrings(String glue, Collection<String> strings) {
         StringBuilder builder = new StringBuilder();
-        for(String str : strings) {
-            if(builder.length() != 0) {
+        for (String str : strings) {
+            if (builder.length() != 0) {
                 builder.append(glue);
             }
             builder.append(str);
@@ -254,12 +255,12 @@ public class SqliteJobQueue implements JobQueue {
     public Long getNextJobDelayUntilNs(boolean hasNetwork) {
         SQLiteStatement stmt =
                 hasNetwork ? sqlHelper.getNextJobDelayedUntilWithNetworkStatement()
-                : sqlHelper.getNextJobDelayedUntilWithoutNetworkStatement();
+                        : sqlHelper.getNextJobDelayedUntilWithoutNetworkStatement();
         synchronized (stmt) {
             try {
                 stmt.clearBindings();
                 return stmt.simpleQueryForLong();
-            } catch (SQLiteDoneException e){
+            } catch (SQLiteDoneException e) {
                 return null;
             }
         }
@@ -373,6 +374,7 @@ public class SqliteJobQueue implements JobQueue {
 
     public static interface JobSerializer {
         public byte[] serialize(Object object) throws IOException;
+
         public <T extends BaseJob> T deserialize(byte[] bytes) throws IOException, ClassNotFoundException;
     }
 }

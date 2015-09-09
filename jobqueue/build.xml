@@ -50,9 +50,9 @@
 
     <!-- quick check on sdk.dir -->
     <fail
-            message="sdk.dir is missing. Make sure to generate local.properties using 'android update project' or to inject it through the ANDROID_HOME environment variable."
-            unless="sdk.dir"
-            />
+        message="sdk.dir is missing. Make sure to generate local.properties using 'android update project' or to inject it through the ANDROID_HOME environment variable."
+        unless="sdk.dir"
+        />
 
     <!--
         Import per project custom build rules if present at the root of the project.
@@ -123,7 +123,8 @@
     <target name="-pre-compile">
         <!-- android uses this property for its generated testing framework. We'll set it manually.-->
         <property name="tested.project.absolute.dir" location="."/>
-        <property name="tested.project.test.absolute.dir" location="${tested.project.absolute.dir}/test"/>
+        <property name="tested.project.test.absolute.dir"
+                  location="${tested.project.absolute.dir}/test"/>
         <property name="out.test.classes.absolute.dir" location="${out.dir}/testClasses"/>
     </target>
 
@@ -162,12 +163,12 @@
     </target>
 
     <target name="build-jar" depends="release" description="builds jar from compiled code">
-        <mkdir dir="release" />
+        <mkdir dir="release"/>
         <xpath input="AndroidManifest.xml" expression="/manifest/@android:versionName"
                output="versionName" default="unknown"/>
         <jar jarfile="release/android-priority-jobqueue-${versionName}.jar">
             <fileset dir="${out.dir}/classes">
-                <include name="com/path/android/jobqueue/**" />
+                <include name="com/path/android/jobqueue/**"/>
             </fileset>
             <file name="LICENSE.txt"/>
         </jar>
@@ -193,7 +194,8 @@
 
 
         <mkdir dir="${basedir}/out/reports/tests"/>
-        <junit showoutput="true" fork="no" haltonfailure="yes" failureproperty="junit.failure" printsummary="yes" logfailedtests="true">
+        <junit showoutput="true" fork="no" haltonfailure="yes" failureproperty="junit.failure"
+               printsummary="yes" logfailedtests="true">
             <jvmarg value="-Xmx2g"/>
             <formatter type="plain" usefile="false"/>
             <formatter type="plain"/>
@@ -217,15 +219,18 @@
         </junit>
         <!-- Generate Cobertura html file report  containing the coverage data
      -->
-        <cobertura-report format="html" srcdir="${source.absolute.dir}" destdir="${coverate.report.absolute.dir}"
+        <cobertura-report format="html" srcdir="${source.absolute.dir}"
+                          destdir="${coverate.report.absolute.dir}"
                           datafile="${cobertura.absolute}"/>
         <fail if="junit.failure" message="Unit test(s) failed.  See reports!"/>
     </target>
 
     <target name="javadoc">
-        <javadoc destdir="${basedir}/javadoc/"      additionalparam="-J-Dorg.apache.commons.attributes.javadoc.CATaglet.sources=${source.absolute.dir}">
-        <taglet name="org.apache.commons.attributes.javadoc.CATaglet" path="${ant.home}/lib/commons-attributes-compiler-2.2.jar"/>
-        <fileset dir="${source.absolute.dir}" includes="**/*.java"/>
+        <javadoc destdir="${basedir}/javadoc/"
+                 additionalparam="-J-Dorg.apache.commons.attributes.javadoc.CATaglet.sources=${source.absolute.dir}">
+            <taglet name="org.apache.commons.attributes.javadoc.CATaglet"
+                    path="${ant.home}/lib/commons-attributes-compiler-2.2.jar"/>
+            <fileset dir="${source.absolute.dir}" includes="**/*.java"/>
         </javadoc>
     </target>
 
@@ -235,7 +240,8 @@
 
     <target name="runtest" description="Runs the test you specify on the command
     line with -Dtest=" depends="compile.tests, ensure-test-name">
-        <junit showoutput="true" fork="yes" failureproperty="junit.failure" printsummary="yes" logfailedtests="true">
+        <junit showoutput="true" fork="yes" failureproperty="junit.failure" printsummary="yes"
+               logfailedtests="true">
             <formatter type="plain" usefile="false"/>
             <formatter type="plain"/>
             <sysproperty key="net.sourceforge.cobertura.datafile"

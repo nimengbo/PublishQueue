@@ -21,18 +21,18 @@ public class CountWithGroupIdsResult {
     }
 
     public CountWithGroupIdsResult mergeWith(CountWithGroupIdsResult other) {
-        if(groupIds == null || other.groupIds == null) {
+        if (groupIds == null || other.groupIds == null) {
             this.count += other.count;
-            if(groupIds == null) {
+            if (groupIds == null) {
                 groupIds = other.groupIds;
             }
             return this;
         }
         //there are some groups, we need to find if any group is in both lists
         int sharedGroups = 0;
-        for(String groupId : other.groupIds) {
-            if(groupIds.add(groupId) == false) {
-                sharedGroups ++;
+        for (String groupId : other.groupIds) {
+            if (groupIds.add(groupId) == false) {
+                sharedGroups++;
             }
         }
         count = count + other.count - sharedGroups;

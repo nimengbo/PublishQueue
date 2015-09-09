@@ -29,7 +29,7 @@ public class NonPersistentJobSet implements JobSet {
     }
 
     private JobHolder safeFirst() {
-        if(set.size() < 1) {
+        if (set.size() < 1) {
             return null;
         }
         return set.first();
@@ -37,7 +37,7 @@ public class NonPersistentJobSet implements JobSet {
 
     @Override
     public JobHolder peek(Collection<String> excludeGroupIds) {
-        if(excludeGroupIds == null || excludeGroupIds.size() == 0) {
+        if (excludeGroupIds == null || excludeGroupIds.size() == 0) {
             return safeFirst();
         }
         //there is an exclude list, we have to itereate :/
@@ -55,7 +55,7 @@ public class NonPersistentJobSet implements JobSet {
     }
 
     private JobHolder safePeek() {
-        if(set.size() == 0) {
+        if (set.size() == 0) {
             return null;
         }
         return safeFirst();
@@ -64,7 +64,7 @@ public class NonPersistentJobSet implements JobSet {
     @Override
     public JobHolder poll(Collection<String> excludeGroupIds) {
         JobHolder peek = peek(excludeGroupIds);
-        if(peek != null) {
+        if (peek != null) {
             remove(peek);
         }
         return peek;
@@ -77,18 +77,18 @@ public class NonPersistentJobSet implements JobSet {
 
     @Override
     public boolean offer(JobHolder holder) {
-        if(holder.getId() == null) {
+        if (holder.getId() == null) {
             throw new RuntimeException("cannot add job holder w/o an ID");
         }
         boolean result = set.add(holder);
-        if(result == false) {
+        if (result == false) {
             //remove the existing element and add new one
             remove(holder);
             result = set.add(holder);
         }
-        if(result) {
+        if (result) {
             idCache.put(holder.getId(), holder);
-            if(holder.getGroupId() != null) {
+            if (holder.getGroupId() != null) {
                 incGroupCount(holder.getGroupId());
             }
         }
@@ -97,7 +97,7 @@ public class NonPersistentJobSet implements JobSet {
     }
 
     private void incGroupCount(String groupId) {
-        if(existingGroups.containsKey(groupId) == false) {
+        if (existingGroups.containsKey(groupId) == false) {
             existingGroups.put(groupId, 1);
         } else {
             existingGroups.put(groupId, existingGroups.get(groupId) + 1);
@@ -106,13 +106,13 @@ public class NonPersistentJobSet implements JobSet {
 
     private void decGroupCount(String groupId) {
         Integer val = existingGroups.get(groupId);
-        if(val == null || val == 0) {
+        if (val == null || val == 0) {
             //TODO should we crash?
             JqLog.e("detected inconsistency in NonPersistentJobSet's group id hash");
             return;
         }
         val -= 1;
-        if(val == 0) {
+        if (val == 0) {
             existingGroups.remove(groupId);
         }
     }
@@ -120,15 +120,14 @@ public class NonPersistentJobSet implements JobSet {
     @Override
     public boolean remove(JobHolder holder) {
         boolean removed = set.remove(holder);
-        if(removed) {
+        if (removed) {
             idCache.remove(holder.getId());
-            if(holder.getGroupId() != null) {
+            if (holder.getGroupId() != null) {
                 decGroupCount(holder.getGroupId());
             }
         }
         return removed;
     }
-
 
 
     @Override
@@ -149,27 +148,27 @@ public class NonPersistentJobSet implements JobSet {
         int total = 0;
         int groupCnt = existingGroups.keySet().size();
         Set<String> groupIdSet = null;
-        if(groupCnt > 0) {
+        if (groupCnt > 0) {
             groupIdSet = new HashSet<String>();//we have to track :/
         }
-        for(JobHolder holder : set) {
-            if(holder.getDelayUntilNs() < now) {
+        for (JobHolder holder : set) {
+            if (holder.getDelayUntilNs() < now) {
                 //we should not need to check groupCnt but what if sth is wrong in hashmap, be defensive till
                 //we write unit tests around NonPersistentJobSet
-                if(holder.getGroupId() != null) {
-                    if(excludeGroups != null && excludeGroups.contains(holder.getGroupId())) {
+                if (holder.getGroupId() != null) {
+                    if (excludeGroups != null && excludeGroups.contains(holder.getGroupId())) {
                         continue;
                     }
                     //we should not need to check groupCnt but what if sth is wrong in hashmap, be defensive till
                     //we write unit tests around NonPersistentJobSet
-                    if(groupCnt > 0) {
-                        if(groupIdSet.add(holder.getGroupId())) {
+                    if (groupCnt > 0) {
+                        if (groupIdSet.add(holder.getGroupId())) {
                             total++;
                         }
                     }
                     //else skip, we already counted this group
                 } else {
-                    total ++;
+                    total++;
                 }
             }
         }
@@ -177,26 +176,26 @@ public class NonPersistentJobSet implements JobSet {
     }
 
     @Override
-    public CountWithGroupIdsResult countReadyJobs(Collection <String> excludeGroups) {
-        if(existingGroups.size() == 0) {
+    public CountWithGroupIdsResult countReadyJobs(Collection<String> excludeGroups) {
+        if (existingGroups.size() == 0) {
             return new CountWithGroupIdsResult(set.size(), null);
         } else {
             //todo we can actually count from existingGroups set if we start counting numbers there as well
             int total = 0;
             Set<String> existingGroupIds = null;
-            for(JobHolder holder : set) {
-                if(holder.getGroupId() != null) {
-                    if(excludeGroups != null && excludeGroups.contains(holder.getGroupId())) {
+            for (JobHolder holder : set) {
+                if (holder.getGroupId() != null) {
+                    if (excludeGroups != null && excludeGroups.contains(holder.getGroupId())) {
                         continue;
-                    } else if(existingGroupIds == null) {
+                    } else if (existingGroupIds == null) {
                         existingGroupIds = new HashSet<String>();
                         existingGroupIds.add(holder.getGroupId());
-                    } else if(existingGroupIds.add(holder.getGroupId()) == false) {
+                    } else if (existingGroupIds.add(holder.getGroupId()) == false) {
                         continue;
                     }
 
                 }
-                total ++;
+                total++;
             }
             return new CountWithGroupIdsResult(total, existingGroupIds);
         }

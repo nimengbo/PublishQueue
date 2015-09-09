@@ -40,7 +40,7 @@ public class CachedJobQueue implements JobQueue {
 
     @Override
     public int count() {
-        if(cache.count == null) {
+        if (cache.count == null) {
             cache.count = delegate.count();
         }
         return cache.count;
@@ -48,12 +48,12 @@ public class CachedJobQueue implements JobQueue {
 
     @Override
     public int countReadyJobs(boolean hasNetwork, Collection<String> excludeGroups) {
-        if(cache.count != null && cache.count < 1) {
+        if (cache.count != null && cache.count < 1) {
             //we know count is zero, why query?
             return 0;
         }
         int count = delegate.countReadyJobs(hasNetwork, excludeGroups);
-        if(count == 0) {
+        if (count == 0) {
             //warm up cache if this is an empty queue case. if not, we are creating an unncessary query.
             count();
         }
@@ -62,15 +62,15 @@ public class CachedJobQueue implements JobQueue {
 
     @Override
     public JobHolder nextJobAndIncRunCount(boolean hasNetwork, Collection<String> excludeGroups) {
-        if(cache.count != null && cache.count < 1) {
+        if (cache.count != null && cache.count < 1) {
             return null;//we know we are empty, no need for querying
         }
         JobHolder holder = delegate.nextJobAndIncRunCount(hasNetwork, excludeGroups);
         //if holder is null, there is a good chance that there aren't any jobs in queue try to cache it by calling count
-        if(holder == null) {
+        if (holder == null) {
             //warm up empty state cache
             count();
-        } else if(cache.count != null) {
+        } else if (cache.count != null) {
             //no need to invalidate cache for count
             cache.count--;
         }
@@ -79,9 +79,9 @@ public class CachedJobQueue implements JobQueue {
 
     @Override
     public Long getNextJobDelayUntilNs(boolean hasNetwork) {
-        if(cache.delayUntil == null) {
+        if (cache.delayUntil == null) {
             cache.delayUntil = new Cache.DelayUntil(hasNetwork, delegate.getNextJobDelayUntilNs(hasNetwork));
-        } else if(!cache.delayUntil.isValid(hasNetwork)) {
+        } else if (!cache.delayUntil.isValid(hasNetwork)) {
             cache.delayUntil.set(hasNetwork, delegate.getNextJobDelayUntilNs(hasNetwork));
         }
         return cache.delayUntil.value;

@@ -21,6 +21,7 @@ abstract public class Job extends BaseJob implements Serializable {
     /**
      * used by {@link JobManager} to assign proper priority at the time job is added.
      * This field is not preserved!
+     *
      * @return priority (higher = better)
      */
     public final int getPriority() {
@@ -30,6 +31,7 @@ abstract public class Job extends BaseJob implements Serializable {
     /**
      * used by {@link JobManager} to assign proper delay at the time job is added.
      * This field is not preserved!
+     *
      * @return delay in ms
      */
     public final long getDelayInMs() {

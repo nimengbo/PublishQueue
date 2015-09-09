@@ -4,7 +4,6 @@ import com.path.android.jobqueue.JobHolder;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Queue;
 
 /**
  * A {@link MergedQueue} class that can separate jobs based on their network requirement
@@ -13,6 +12,7 @@ public class NetworkAwarePriorityQueue extends MergedQueue {
 
     /**
      * create a network aware priority queue with given initial capacity * 2 and comparator
+     *
      * @param initialCapacity
      * @param comparator
      */
@@ -22,12 +22,13 @@ public class NetworkAwarePriorityQueue extends MergedQueue {
 
     /**
      * {@link java.util.Queue#peek()} implementation with network requirement filter
+     *
      * @param canUseNetwork if {@code true}, does not check network requirement if {@code false}, returns only from
      *                      no network queue
      * @return
      */
     public JobHolder peek(boolean canUseNetwork, Collection<String> excludeGroupIds) {
-        if(canUseNetwork) {
+        if (canUseNetwork) {
             return super.peek(excludeGroupIds);
         } else {
             return super.peekFromQueue(SetId.S1, excludeGroupIds);
@@ -36,12 +37,13 @@ public class NetworkAwarePriorityQueue extends MergedQueue {
 
     /**
      * {@link java.util.Queue#poll()} implementation with network requirement filter
+     *
      * @param canUseNetwork if {@code true}, does not check network requirement if {@code false}, returns only from
      *                      no network queue
      * @return
      */
     public JobHolder poll(boolean canUseNetwork, Collection<String> excludeGroupIds) {
-        if(canUseNetwork) {
+        if (canUseNetwork) {
             return super.peek(excludeGroupIds);
         } else {
             return super.peekFromQueue(SetId.S1, excludeGroupIds);
@@ -55,6 +57,7 @@ public class NetworkAwarePriorityQueue extends MergedQueue {
 
     /**
      * create a {@link TimeAwarePriorityQueue}
+     *
      * @param ignoredQueueId
      * @param initialCapacity
      * @param comparator
@@ -68,7 +71,7 @@ public class NetworkAwarePriorityQueue extends MergedQueue {
 
     public CountWithGroupIdsResult countReadyJobs(boolean hasNetwork, Collection<String> excludeGroups) {
         long now = System.nanoTime();
-        if(hasNetwork) {
+        if (hasNetwork) {
             return super.countReadyJobs(SetId.S0, now, excludeGroups).mergeWith(super.countReadyJobs(SetId.S1, now, excludeGroups));
         } else {
             return super.countReadyJobs(SetId.S1, now, excludeGroups);

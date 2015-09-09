@@ -2,7 +2,9 @@ package com.path.android.jobqueue.nonPersistentQueue;
 
 import com.path.android.jobqueue.JobHolder;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 /**
  * This is a {@link MergedQueue} class that can handle queue updates based on time.
@@ -15,6 +17,7 @@ public class TimeAwarePriorityQueue extends MergedQueue {
     /**
      * When retrieving jobs, considers current system nanotime to check if jobs are valid. if both jobs are valid
      * or both jobs are invalid, returns based on regular comparison
+     *
      * @param initialCapacity
      * @param comparator
      */
@@ -29,6 +32,7 @@ public class TimeAwarePriorityQueue extends MergedQueue {
 
     /**
      * create a {@link PriorityQueue} with given comparator
+     *
      * @param setId
      * @param initialCapacity
      * @param comparator
@@ -36,7 +40,7 @@ public class TimeAwarePriorityQueue extends MergedQueue {
      */
     @Override
     protected JobSet createQueue(SetId setId, int initialCapacity, Comparator<JobHolder> comparator) {
-        if(setId == SetId.S0) {
+        if (setId == SetId.S0) {
             return new NonPersistentJobSet(comparator);
         } else {
             return new NonPersistentJobSet(new ConsistentTimedComparator(comparator));

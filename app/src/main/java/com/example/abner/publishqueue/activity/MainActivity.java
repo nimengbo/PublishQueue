@@ -25,15 +25,15 @@ public class MainActivity extends Activity {
         initListener();
     }
 
-    private void initView(){
+    private void initView() {
 
-        mServiceButton = (Button)findViewById(R.id.publish_queue_by_service);
+        mServiceButton = (Button) findViewById(R.id.publish_queue_by_service);
 
-        mHanlderButton = (Button)findViewById(R.id.publish_queue_by_handler);
+        mHanlderButton = (Button) findViewById(R.id.publish_queue_by_handler);
 
     }
 
-    private void initListener(){
+    private void initListener() {
 
         mServiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,8 +52,6 @@ public class MainActivity extends Activity {
         });
 
     }
-
-
 
 
 }

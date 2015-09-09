@@ -1,10 +1,8 @@
 package com.example.abner.publishqueue.activity;
 
 import android.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.app.AppCompatActivity;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,14 +20,14 @@ public class HandlerQueueActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_handler_queue);
         ActionBar actionbar = getActionBar();
-        if(actionbar != null) {
+        if (actionbar != null) {
             actionbar.setDisplayHomeAsUpEnabled(true);
         }
         initView();
 
     }
 
-    private void initView(){
+    private void initView() {
         jobManager.addJobInBackground(new PublishJob(new SparseArray<String>()));
 
     }
@@ -51,7 +49,7 @@ public class HandlerQueueActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
-        }else if(id ==  android.R.id.home){
+        } else if (id == android.R.id.home) {
             onBackPressed();
         }
 

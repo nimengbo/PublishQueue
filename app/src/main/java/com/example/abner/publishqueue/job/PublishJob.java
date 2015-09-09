@@ -1,12 +1,9 @@
 package com.example.abner.publishqueue.job;
 
-import android.renderscript.RenderScript;
 import android.util.SparseArray;
 
 import com.path.android.jobqueue.Job;
 import com.path.android.jobqueue.Params;
-
-import java.util.Map;
 
 /**
  * Created by Abner on 15/9/8.
@@ -19,6 +16,7 @@ public class PublishJob extends Job {
     private long localId;
 
     private SparseArray<String> params;
+
     public PublishJob(SparseArray<String> params) {
         super(new Params(Priority.MID).requireNetwork().persist().groupBy("post_tweet"));//order of tweets matter, we don't want to send two in parallel
 
@@ -41,6 +39,7 @@ public class PublishJob extends Job {
     protected void onCancel() {
         //TODO 取消请求
     }
+
     //如果onRun 里抛出异常 会再跑一次这个
     @Override
     protected boolean shouldReRunOnThrowable(Throwable throwable) {

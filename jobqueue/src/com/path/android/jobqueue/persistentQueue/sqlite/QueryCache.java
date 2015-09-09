@@ -32,17 +32,18 @@ public class QueryCache {
 
     /**
      * create a cache key for an exclude group set. exclude groups are guaranteed to be ordered so we rely on that
+     *
      * @param hasNetwork
      * @param excludeGroups
      * @return
      */
     private String cacheKey(boolean hasNetwork, Collection<String> excludeGroups) {
-        if(excludeGroups == null || excludeGroups.size() == 0) {
+        if (excludeGroups == null || excludeGroups.size() == 0) {
             return hasNetwork ? KEY_EMPTY_WITH_NETWORK : KEY_EMPTY_WITHOUT_NETWORK;
         }
         reusedBuilder.setLength(0);
         reusedBuilder.append(hasNetwork ? "X" : "Y");
-        for(String group : excludeGroups) {
+        for (String group : excludeGroups) {
             reusedBuilder.append("-").append(group);
         }
         return reusedBuilder.toString();

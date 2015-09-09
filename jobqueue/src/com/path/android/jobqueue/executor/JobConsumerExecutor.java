@@ -44,7 +44,7 @@ public class JobConsumerExecutor {
     }
 
     private boolean canIDie() {
-        if(doINeedANewThread(true, false) == false) {
+        if (doINeedANewThread(true, false) == false) {
             return true;
         }
         return false;
@@ -52,22 +52,22 @@ public class JobConsumerExecutor {
 
     private boolean doINeedANewThread(boolean inConsumerThread, boolean addIfNeeded) {
         //if network provider cannot notify us, we have to busy wait
-        if(contract.isRunning() == false) {
-            if(inConsumerThread) {
+        if (contract.isRunning() == false) {
+            if (inConsumerThread) {
                 activeConsumerCount.decrementAndGet();
             }
             return false;
         }
 
         synchronized (threadGroup) {
-            if(isAboveLoadFactor(inConsumerThread) && canAddMoreConsumers()) {
-                if(addIfNeeded) {
+            if (isAboveLoadFactor(inConsumerThread) && canAddMoreConsumers()) {
+                if (addIfNeeded) {
                     addConsumer();
                 }
                 return true;
             }
         }
-        if(inConsumerThread) {
+        if (inConsumerThread) {
             activeConsumerCount.decrementAndGet();
         }
         return false;
@@ -95,8 +95,8 @@ public class JobConsumerExecutor {
             int consumerCnt = activeConsumerCount.intValue() - (inConsumerThread ? 1 : 0);
             boolean res =
                     consumerCnt < minConsumerSize ||
-                    consumerCnt * loadFactor < contract.countRemainingReadyJobs() + runningJobHolders.size();
-            if(JqLog.isDebugEnabled()) {
+                            consumerCnt * loadFactor < contract.countRemainingReadyJobs() + runningJobHolders.size();
+            if (JqLog.isDebugEnabled()) {
                 JqLog.d("%s: load factor check. %s = (%d < %d)|| (%d * %d < %d + %d). consumer thread: %s", Thread.currentThread().getName(), res,
                         consumerCnt, minConsumerSize,
                         consumerCnt, loadFactor, contract.countRemainingReadyJobs(), runningJobHolders.size(), inConsumerThread);
@@ -124,7 +124,8 @@ public class JobConsumerExecutor {
 
     /**
      * returns true if job is currently handled by one of the executor threads
-     * @param id id of the job
+     *
+     * @param id         id of the job
      * @param persistent boolean flag to distinguish id conflicts
      * @return true if job is currently handled here
      */
@@ -144,18 +145,21 @@ public class JobConsumerExecutor {
         /**
          * should insert the given {@link JobHolder} to related {@link JobQueue}. if it already exists, should replace the
          * existing one.
+         *
          * @param jobHolder
          */
         public void insertOrReplace(JobHolder jobHolder);
 
         /**
          * should remove the job from the related {@link JobQueue}
+         *
          * @param jobHolder
          */
         public void removeJob(JobHolder jobHolder);
 
         /**
          * should return the next job which is available to be run.
+         *
          * @param wait
          * @param waitUnit
          * @return next job to execute or null if no jobs are available
@@ -175,6 +179,7 @@ public class JobConsumerExecutor {
         private final Contract contract;
         private final JobConsumerExecutor executor;
         private boolean didRunOnce = false;
+
         public JobConsumer(Contract contract, JobConsumerExecutor executor) {
             this.executor = executor;
             this.contract = contract;
@@ -185,8 +190,8 @@ public class JobConsumerExecutor {
             boolean canDie;
             do {
                 try {
-                    if(JqLog.isDebugEnabled()) {
-                        if(didRunOnce == false) {
+                    if (JqLog.isDebugEnabled()) {
+                        if (didRunOnce == false) {
                             JqLog.d("starting consumer %s", Thread.currentThread().getName());
                             didRunOnce = true;
                         } else {
@@ -209,8 +214,8 @@ public class JobConsumerExecutor {
                 } finally {
                     //to avoid creating a new thread for no reason, consider not killing this one first
                     canDie = executor.canIDie();
-                    if(JqLog.isDebugEnabled()) {
-                        if(canDie) {
+                    if (JqLog.isDebugEnabled()) {
+                        if (canDie) {
                             JqLog.d("finishing consumer %s", Thread.currentThread().getName());
                         } else {
                             JqLog.d("didn't allow me to die, re-running %s", Thread.currentThread().getName());

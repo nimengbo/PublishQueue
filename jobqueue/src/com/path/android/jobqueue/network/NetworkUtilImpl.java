@@ -12,11 +12,12 @@ import android.net.NetworkInfo;
  */
 public class NetworkUtilImpl implements NetworkUtil, NetworkEventProvider {
     private Listener listener;
+
     public NetworkUtilImpl(Context context) {
         context.getApplicationContext().registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if(listener == null) {//shall not be but just be safe
+                if (listener == null) {//shall not be but just be safe
                     return;
                 }
                 //http://developer.android.com/reference/android/net/ConnectivityManager.html#EXTRA_NETWORK_INFO

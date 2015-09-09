@@ -1,8 +1,8 @@
 package com.example.abner.publishqueue.activity;
 
 import android.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -37,7 +37,7 @@ public class ServiceQueueActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
-        }else if(id ==  android.R.id.home){
+        } else if (id == android.R.id.home) {
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);

@@ -16,9 +16,9 @@ public class ConsistentTimedComparator implements Comparator<JobHolder> {
 
     @Override
     public int compare(JobHolder jobHolder, JobHolder jobHolder2) {
-        if(jobHolder.getDelayUntilNs() < jobHolder2.getDelayUntilNs()) {
+        if (jobHolder.getDelayUntilNs() < jobHolder2.getDelayUntilNs()) {
             return -1;
-        } else if(jobHolder.getDelayUntilNs() > jobHolder2.getDelayUntilNs()) {
+        } else if (jobHolder.getDelayUntilNs() > jobHolder2.getDelayUntilNs()) {
             return 1;
         }
         return baseComparator.compare(jobHolder, jobHolder2);

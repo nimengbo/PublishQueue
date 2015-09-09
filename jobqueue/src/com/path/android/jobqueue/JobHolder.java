@@ -53,6 +53,7 @@ public class JobHolder {
 
     /**
      * runs the job w/o throwing any exceptions
+     *
      * @param currentRunCount
      * @return
      */
@@ -123,7 +124,7 @@ public class JobHolder {
     @Override
     public int hashCode() {
         //we don't really care about overflow.
-        if(id == null) {
+        if (id == null) {
             return super.hashCode();
         }
         return id.intValue();
@@ -131,11 +132,11 @@ public class JobHolder {
 
     @Override
     public boolean equals(Object o) {
-        if(o instanceof JobHolder == false) {
+        if (o instanceof JobHolder == false) {
             return false;
         }
         JobHolder other = (JobHolder) o;
-        if(id == null || other.id == null) {
+        if (id == null || other.id == null) {
             return false;
         }
         return id.equals(other.id);

@@ -17,20 +17,20 @@ public class CopyOnWriteGroupSet {
     }
 
     public synchronized Collection<String> getSafe() {
-        if(publicClone == null) {
+        if (publicClone == null) {
             publicClone = new ArrayList<String>(internalSet);
         }
         return publicClone;
     }
 
     public synchronized void add(String group) {
-        if(internalSet.add(group)) {
+        if (internalSet.add(group)) {
             publicClone = null;//invalidate
         }
     }
 
     public synchronized void remove(String group) {
-        if(internalSet.remove(group)) {
+        if (internalSet.remove(group)) {
             publicClone = null;
         }
     }

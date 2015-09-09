@@ -4,7 +4,8 @@ import com.path.android.jobqueue.JobHolder;
 import com.path.android.jobqueue.JobManager;
 import com.path.android.jobqueue.JobQueue;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
 
 public class NonPersistentPriorityQueue implements JobQueue {
     private long nonPersistentJobIdGenerator = Integer.MIN_VALUE;
@@ -71,7 +72,7 @@ public class NonPersistentPriorityQueue implements JobQueue {
 
         if (jobHolder != null) {
             //check if job can run
-            if(jobHolder.getDelayUntilNs() > System.nanoTime()) {
+            if (jobHolder.getDelayUntilNs() > System.nanoTime()) {
                 jobHolder = null;
             } else {
                 jobHolder.setRunningSessionId(sessionId);
@@ -113,13 +114,13 @@ public class NonPersistentPriorityQueue implements JobQueue {
             //we should not check delay here. TimeAwarePriorityQueue does it for us.
             //high priority first
             int cmp = compareInt(holder1.getPriority(), holder2.getPriority());
-            if(cmp != 0) {
+            if (cmp != 0) {
                 return cmp;
             }
 
             //if run counts are also equal, older job first
             cmp = -compareLong(holder1.getCreatedNs(), holder2.getCreatedNs());
-            if(cmp != 0) {
+            if (cmp != 0) {
                 return cmp;
             }
 

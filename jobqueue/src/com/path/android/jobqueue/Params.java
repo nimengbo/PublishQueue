@@ -12,7 +12,6 @@ public class Params {
     private long delayMs;
 
     /**
-     *
      * @param priority higher = better
      */
     public Params(int priority) {
@@ -21,6 +20,7 @@ public class Params {
 
     /**
      * Sets the Job as requiring network
+     *
      * @return this
      */
     public Params requireNetwork() {
@@ -30,6 +30,7 @@ public class Params {
 
     /**
      * Sets the group id. Jobs in the same group are guaranteed to execute sequentially.
+     *
      * @param groupId which group this job belongs (can be null of course)
      * @return this
      */
@@ -40,6 +41,7 @@ public class Params {
 
     /**
      * Marks the job as persistent. Make sure your job is serializable.
+     *
      * @return this
      */
     public Params persist() {
@@ -49,6 +51,7 @@ public class Params {
 
     /**
      * Delays the job in given ms.
+     *
      * @param delayMs .
      * @return this
      */
@@ -59,6 +62,7 @@ public class Params {
 
     /**
      * convenience method to set network requirement
+     *
      * @param requiresNetwork true|false
      * @return this
      */
@@ -69,6 +73,7 @@ public class Params {
 
     /**
      * convenience method to set group id.
+     *
      * @param groupId
      * @return this
      */
@@ -79,6 +84,7 @@ public class Params {
 
     /**
      * convenience method to set whether {@link JobManager} should persist this job or not.
+     *
      * @param persistent true|false
      * @return this
      */
@@ -89,6 +95,7 @@ public class Params {
 
     /**
      * convenience method to set delay
+     *
      * @param delayMs in ms
      * @return this
      */

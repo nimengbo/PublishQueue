@@ -2,6 +2,7 @@ package com.path.android.jobqueue.persistentQueue.sqlite;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
+
 import com.path.android.jobqueue.log.JqLog;
 
 /**
@@ -9,7 +10,10 @@ import com.path.android.jobqueue.log.JqLog;
  */
 public class SqlHelper {
 
-    /**package**/ String FIND_BY_ID_QUERY;
+    /**
+     * package
+     **/
+    String FIND_BY_ID_QUERY;
 
     private SQLiteStatement insertStatement;
     private SQLiteStatement insertOrReplaceStatement;
@@ -112,7 +116,7 @@ public class SqlHelper {
     }
 
     public SQLiteStatement getNextJobDelayedUntilWithNetworkStatement() {
-        if(nextJobDelayedUntilWithNetworkStatement == null) {
+        if (nextJobDelayedUntilWithNetworkStatement == null) {
             String sql = "SELECT " + DbOpenHelper.DELAY_UNTIL_NS_COLUMN.columnName
                     + " FROM " + tableName + " WHERE "
                     + DbOpenHelper.RUNNING_SESSION_ID_COLUMN.columnName + " != " + sessionId
@@ -124,7 +128,7 @@ public class SqlHelper {
     }
 
     public SQLiteStatement getNextJobDelayedUntilWithoutNetworkStatement() {
-        if(nextJobDelayedUntilWithoutNetworkStatement == null) {
+        if (nextJobDelayedUntilWithoutNetworkStatement == null) {
             String sql = "SELECT " + DbOpenHelper.DELAY_UNTIL_NS_COLUMN.columnName
                     + " FROM " + tableName + " WHERE "
                     + DbOpenHelper.RUNNING_SESSION_ID_COLUMN.columnName + " != " + sessionId
@@ -169,7 +173,7 @@ public class SqlHelper {
 
     public void resetDelayTimesTo(long newDelayTime) {
         db.execSQL("UPDATE " + DbOpenHelper.JOB_HOLDER_TABLE_NAME + " SET " + DbOpenHelper.DELAY_UNTIL_NS_COLUMN.columnName + "=?"
-            , new Object[]{newDelayTime});
+                , new Object[]{newDelayTime});
     }
 
     public static class Property {

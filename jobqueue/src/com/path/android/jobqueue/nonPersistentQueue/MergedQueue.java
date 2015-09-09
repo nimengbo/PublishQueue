@@ -2,7 +2,8 @@ package com.path.android.jobqueue.nonPersistentQueue;
 
 import com.path.android.jobqueue.JobHolder;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
 
 /**
  * A queue implementation that utilize two queues depending on one or multiple properties of the {@link JobHolder}
@@ -17,9 +18,8 @@ abstract public class MergedQueue implements JobSet {
     final Comparator<JobHolder> retrieveComparator;
 
     /**
-     *
-     * @param initialCapacity passed to {@link MergedQueue#createQueue(com.path.android.jobqueue.nonPersistentQueue.MergedQueue.SetId, int, java.util.Comparator)}
-     * @param comparator passed to {@link MergedQueue#createQueue(com.path.android.jobqueue.nonPersistentQueue.MergedQueue.SetId, int, java.util.Comparator)}
+     * @param initialCapacity    passed to {@link MergedQueue#createQueue(com.path.android.jobqueue.nonPersistentQueue.MergedQueue.SetId, int, java.util.Comparator)}
+     * @param comparator         passed to {@link MergedQueue#createQueue(com.path.android.jobqueue.nonPersistentQueue.MergedQueue.SetId, int, java.util.Comparator)}
      * @param retrieveComparator upon retrieval, if both queues return items, this comparator is used to decide which
      *                           one should be returned
      */
@@ -32,11 +32,12 @@ abstract public class MergedQueue implements JobSet {
 
     /**
      * used to poll from one of the queues
+     *
      * @param queueId
      * @return
      */
     protected JobHolder pollFromQueue(SetId queueId, Collection<String> excludeGroupIds) {
-        if(queueId == SetId.S0) {
+        if (queueId == SetId.S0) {
             return queue0.poll(excludeGroupIds);
         }
         return queue1.poll(excludeGroupIds);
@@ -44,11 +45,12 @@ abstract public class MergedQueue implements JobSet {
 
     /**
      * used to peek from one of the queues
+     *
      * @param queueId
      * @return
      */
     protected JobHolder peekFromQueue(SetId queueId, Collection<String> excludeGroupIds) {
-        if(queueId == SetId.S0) {
+        if (queueId == SetId.S0) {
             return queue0.peek(excludeGroupIds);
         }
         return queue1.peek(excludeGroupIds);
@@ -60,7 +62,7 @@ abstract public class MergedQueue implements JobSet {
     @Override
     public boolean offer(JobHolder jobHolder) {
         SetId queueId = decideQueue(jobHolder);
-        if(queueId == SetId.S0) {
+        if (queueId == SetId.S0) {
             return queue0.offer(jobHolder);
 
         }
@@ -73,30 +75,30 @@ abstract public class MergedQueue implements JobSet {
     @Override
     public JobHolder poll(Collection<String> excludeGroupIds) {
         JobHolder delayed = queue0.peek(excludeGroupIds);
-        if(delayed == null) {
+        if (delayed == null) {
             return queue1.poll(excludeGroupIds);
         }
         //if queue for this job has changed, re-add it and try poll from scratch
-        if(decideQueue(delayed) != SetId.S0) {
+        if (decideQueue(delayed) != SetId.S0) {
             //should be moved to the other queue
             queue0.remove(delayed);
             queue1.offer(delayed);
             return poll(excludeGroupIds);
         }
         JobHolder nonDelayed = queue1.peek(excludeGroupIds);
-        if(nonDelayed == null) {
+        if (nonDelayed == null) {
             queue0.remove(delayed);
             return delayed;
         }
         //if queue for this job has changed, re-add it and try poll from scratch
-        if(decideQueue(nonDelayed) != SetId.S1) {
+        if (decideQueue(nonDelayed) != SetId.S1) {
             queue0.offer(nonDelayed);
             queue1.remove(nonDelayed);
             return poll(excludeGroupIds);
         }
         //both are not null, need to compare and return the better
         int cmp = retrieveComparator.compare(delayed, nonDelayed);
-        if(cmp == -1) {
+        if (cmp == -1) {
             queue0.remove(delayed);
             return delayed;
         } else {
@@ -113,32 +115,31 @@ abstract public class MergedQueue implements JobSet {
         while (true) {
             JobHolder delayed = queue0.peek(excludeGroupIds);
             //if queue for this job has changed, re-add it and try peek from scratch
-            if(delayed != null && decideQueue(delayed) != SetId.S0) {
+            if (delayed != null && decideQueue(delayed) != SetId.S0) {
                 queue1.offer(delayed);
                 queue0.remove(delayed);
                 continue;//retry
             }
             JobHolder nonDelayed = queue1.peek(excludeGroupIds);
             //if queue for this job has changed, re-add it and try peek from scratch
-            if(nonDelayed != null && decideQueue(nonDelayed) != SetId.S1) {
+            if (nonDelayed != null && decideQueue(nonDelayed) != SetId.S1) {
                 queue0.offer(nonDelayed);
                 queue1.remove(nonDelayed);
                 continue;//retry
             }
-            if(delayed == null) {
+            if (delayed == null) {
                 return nonDelayed;
             }
-            if(nonDelayed == null) {
+            if (nonDelayed == null) {
                 return delayed;
             }
             int cmp = retrieveComparator.compare(delayed, nonDelayed);
-            if(cmp == -1) {
+            if (cmp == -1) {
                 return delayed;
             }
             return nonDelayed;
         }
     }
-
 
 
     /**
@@ -172,6 +173,7 @@ abstract public class MergedQueue implements JobSet {
      * if first queue, should return 0
      * if second queue, should return 1
      * is only called when an item is inserted. methods like remove always call both queues.
+     *
      * @param jobHolder
      * @return
      */
@@ -179,6 +181,7 @@ abstract public class MergedQueue implements JobSet {
 
     /**
      * called when we want to create the subsequent queues
+     *
      * @param initialCapacity
      * @param comparator
      * @return
@@ -186,7 +189,7 @@ abstract public class MergedQueue implements JobSet {
     abstract protected JobSet createQueue(SetId setId, int initialCapacity, Comparator<JobHolder> comparator);
 
     public CountWithGroupIdsResult countReadyJobs(SetId setId, long now, Collection<String> excludeGroups) {
-        if(setId == SetId.S0) {
+        if (setId == SetId.S0) {
             return queue0.countReadyJobs(now, excludeGroups);
         } else {
             return queue1.countReadyJobs(now, excludeGroups);
@@ -194,7 +197,7 @@ abstract public class MergedQueue implements JobSet {
     }
 
     public CountWithGroupIdsResult countReadyJobs(SetId setId, Collection<String> excludeGroups) {
-        if(setId == SetId.S0) {
+        if (setId == SetId.S0) {
             return queue0.countReadyJobs(excludeGroups);
         } else {
             return queue1.countReadyJobs(excludeGroups);
@@ -202,9 +205,9 @@ abstract public class MergedQueue implements JobSet {
     }
 
 
-
     /**
      * Returns the JobHolder that has the given id
+     *
      * @param id id job the job
      * @return
      */
